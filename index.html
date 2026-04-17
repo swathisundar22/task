@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Python Class Test</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink2: #2d2d4e;
+    --accent: #e63946;
+    --accent2: #457b9d;
+    --gold: #f4a261;
+    --bg: #f8f7f2;
+    --card: #ffffff;
+    --border: #e0ddd4;
+    --correct: #2a9d8f;
+    --wrong: #e63946;
+    --muted: #8a8880;
+    --code-bg: #1a1a2e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── SCREENS ─────────────────────────────── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── LANDING ─────────────────────────────── */
+  #screen-landing {
+    min-height: 100vh;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  #screen-landing.active { display: flex; }
+
+  .landing-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, #2d2d6e33 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, #e6394622 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, #457b9d22 0%, transparent 50%);
+  }
+
+  .grid-lines {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .landing-card {
+    position: relative;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 56px 48px;
+    max-width: 560px;
+    width: 100%;
+    backdrop-filter: blur(12px);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .exam-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(230,57,70,0.15);
+    border: 1px solid rgba(230,57,70,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    color: #ff8a93;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .landing-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 5vw, 48px);
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .landing-sub {
+    color: rgba(255,255,255,0.5);
+    font-size: 15px;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+
+  .meta-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+  }
+
+  .meta-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .meta-pill span.icon { font-size: 14px; }
+
+  .input-group {
+    margin-bottom: 16px;
+  }
+
+  .input-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 8px;
+  }
+
+  .input-group input {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 14px 18px;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .input-group input:focus {
+    border-color: rgba(230,57,70,0.5);
+    background: rgba(255,255,255,0.09);
+  }
+
+  .input-group input::placeholder { color: rgba(255,255,255,0.25); }
+
+  .btn-start {
+    width: 100%;
+    margin-top: 8px;
+    padding: 16px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 24px rgba(230,57,70,0.4);
+  }
+
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(230,57,70,0.5); }
+  .btn-start:active { transform: translateY(0); }
+
+  /* ── EXAM ────────────────────────────────── */
+  #screen-exam {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  .exam-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  .topbar-left { display: flex; flex-direction: column; }
+  .topbar-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .topbar-exam { font-size: 12px; color: var(--muted); }
+
+  .timer-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ink);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .timer-wrap.warning { background: var(--accent); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
+
+  .progress-bar-wrap {
+    position: sticky;
+    top: 57px;
+    z-index: 99;
+    background: var(--bg);
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 4px;
+    transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .progress-text {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* Section headers */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0 28px;
+  }
+
+  .section-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-marks {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--border);
+    padding: 3px 10px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  /* Question cards */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .question-card:hover { border-color: #c8c4bb; }
+  .question-card.answered { border-color: var(--accent2); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .q-num {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .question-card.answered .q-num { background: var(--accent2); }
+
+  .q-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink);
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .q-marks {
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--bg);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+  }
+
+  /* Code block */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: #a8dadc;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* MCQ options */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  @media (max-width: 500px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Outfit', sans-serif;
+    color: var(--ink);
+    transition: all 0.15s;
+    text-align: left;
+  }
+
+  .option-btn:hover { border-color: var(--accent2); background: #edf5fb; }
+
+  .option-btn.selected {
+    border-color: var(--accent2);
+    background: #edf5fb;
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  .option-btn.correct { border-color: var(--correct); background: #edf8f6; color: var(--correct); }
+  .option-btn.wrong   { border-color: var(--wrong); background: #fdf0f1; color: var(--wrong); }
+
+  .option-letter {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border: 1.5px solid currentColor;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* Written answer */
+  .written-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.7;
+    margin-top: 4px;
+  }
+
+  .written-textarea:focus { border-color: var(--accent2); }
+  .char-count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 4px; }
+
+  /* Submit */
+  .submit-zone {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-top: 40px;
+    text-align: center;
+  }
+
+  .submit-zone h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .submit-zone p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  .btn-submit {
+    padding: 16px 48px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+  }
+
+  .btn-submit:hover { background: var(--accent); transform: translateY(-2px); }
+
+  /* ── RESULT ──────────────────────────────── */
+  #screen-result {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+    display: none;
+  }
+  #screen-result.active { display: block; }
+
+  .result-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    animation: bounceIn 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+
+  .result-sub { color: var(--muted); font-size: 15px; margin-bottom: 40px; }
+
+  .score-ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .score-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+  }
+
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-bg { fill: none; stroke: var(--border); stroke-width: 10; }
+  .score-ring-fill { fill: none; stroke: var(--accent2); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1); }
+
+  .score-ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score-big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .score-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .breakdown-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .breakdown-card .val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: var(--ink);
+  }
+
+  .breakdown-card .lbl { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  .result-note {
+    background: #fff9e6;
+    border: 1px solid #f4d170;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: #7b5300;
+    line-height: 1.6;
+  }
+
+  /* ── TEACHER PANEL ───────────────────────── */
+  #screen-teacher {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    display: none;
+  }
+  #screen-teacher.active { display: block; }
+
+  .teacher-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .teacher-header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+  }
+
+  .teacher-header p { color: var(--muted); font-size: 14px; }
+
+  .btn-teacher-back {
+    padding: 10px 20px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+  }
+
+  .submissions-list { display: flex; flex-direction: column; gap: 20px; }
+
+  .submission-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .submission-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: var(--ink);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .submission-head h3 { font-size: 16px; font-weight: 600; }
+  .submission-head .meta { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+  .submission-score-badge {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .submission-body { padding: 24px; display: none; }
+  .submission-body.open { display: block; }
+
+  .review-section { margin-bottom: 24px; }
+  .review-section h4 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .written-review-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 12px;
+  }
+
+  .written-review-item .q { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .written-review-item .a {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--ink2);
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+
+  .marks-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .marks-input-row label { font-size: 12px; color: var(--muted); }
+
+  .marks-input {
+    width: 80px;
+    padding: 8px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'DM Mono', monospace;
+    outline: none;
+    text-align: center;
+  }
+
+  .marks-input:focus { border-color: var(--accent2); }
+
+  .btn-save-marks {
+    padding: 8px 20px;
+    background: var(--correct);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+  }
+
+  .mcq-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .mcq-summary-item {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    border: 1px solid var(--border);
+  }
+
+  .mcq-summary-item.correct { background: #edf8f6; border-color: var(--correct); color: var(--correct); }
+  .mcq-summary-item.wrong   { background: #fdf0f1; border-color: var(--wrong); color: var(--wrong); }
+
+  .mcq-summary-item .q-label { font-weight: 600; margin-bottom: 2px; }
+  .mcq-summary-item .ans { font-family: 'DM Mono', monospace; font-size: 11px; }
+
+  /* Teacher login */
+  #teacher-login {
+    min-height: 100vh;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    padding: 40px 20px;
+  }
+  #teacher-login.active { display: flex; }
+
+  .teacher-login-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .teacher-login-card h2 {
+    font-family: 'DM Serif Display', serif;
+    color: #fff;
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+
+  .teacher-login-card p { color: rgba(255,255,255,0.4); font-size: 14px; margin-bottom: 32px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state p { font-size: 15px; }
+
+  /* Utility */
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s;
+    z-index: 999;
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LANDING
+════════════════════════════════════════ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-bg"></div>
+  <div class="grid-lines"></div>
+  <div class="landing-card">
+    <div class="exam-badge"><span>🐍</span> Python Programming</div>
+    <h1 class="landing-title">Class Test</h1>
+    <p class="landing-sub">MCQ + Written answers · Auto-scored · Submit when ready</p>
+
+    <div class="meta-pills">
+      <div class="meta-pill"><span class="icon">⏱</span> 90 Minutes</div>
+      <div class="meta-pill"><span class="icon">📝</span> 17 Questions</div>
+      <div class="meta-pill"><span class="icon">⭐</span> 50 Marks</div>
+    </div>
+
+    <div class="input-group">
+      <label>Your Full Name</label>
+      <input type="text" id="input-name" placeholder="e.g. Priya Shankar" autocomplete="name"/>
+    </div>
+    <div class="input-group">
+      <label>Roll Number</label>
+      <input type="text" id="input-roll" placeholder="e.g. 22CS001"/>
+    </div>
+
+    <button class="btn-start" onclick="startExam()">Begin Exam →</button>
+
+    <p style="text-align:center;margin-top:20px;font-size:12px;color:rgba(255,255,255,0.2);">
+      Teacher? <a href="#" onclick="showTeacherLogin()" style="color:rgba(255,255,255,0.4);text-decoration:none;">Access review panel</a>
+    </p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     EXAM
+════════════════════════════════════════ -->
+<div id="screen-exam" class="screen">
+  <div class="exam-topbar">
+    <div class="topbar-left">
+      <span class="topbar-name" id="topbar-name">—</span>
+      <span class="topbar-exam">Python Class Test · 50 Marks</span>
+    </div>
+    <div class="timer-wrap" id="timer-display">⏱ 90:00</div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-text" id="progress-text">0 of 17 answered</div>
+  </div>
+
+  <!-- SECTION A -->
+  <div class="section-header">
+    <span class="section-num">Section A</span>
+    <span class="section-title">Multiple Choice</span>
+    <span class="section-line"></span>
+    <span class="section-marks">10 × 1 = 10 marks</span>
+  </div>
+
+  <div id="mcq-container"></div>
+
+  <!-- SECTION B -->
+  <div class="section-header">
+    <span class="section-num">Section B</span>
+    <span class="section-title">Short Answer</span>
+    <span class="section-line"></span>
+    <span class="section-marks">5 × 4 = 20 marks</span>
+  </div>
+
+  <div id="short-container"></div>
+
+  <!-- SECTION C -->
+  <div class="section-header">
+    <span class="section-num">Section C</span>
+    <span class="section-title">Programming</span>
+    <span class="section-line"></span>
+    <span class="section-marks">2 × 10 = 20 marks</span>
+  </div>
+
+  <div id="long-container"></div>
+
+  <div class="submit-zone">
+    <h3>Ready to Submit?</h3>
+    <p>Review your answers before submitting. You cannot go back after submission.</p>
+    <button class="btn-submit" onclick="submitExam()">Submit Exam ✓</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     RESULT
+════════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="result-icon" id="result-icon">🎉</div>
+  <h1 class="result-title" id="result-title">Well Done!</h1>
+  <p class="result-sub" id="result-sub">Your answers have been submitted.</p>
+
+  <div class="score-ring-wrap">
+    <div class="score-ring">
+      <svg viewBox="0 0 160 160" width="160" height="160">
+        <circle class="score-ring-bg" cx="80" cy="80" r="70"/>
+        <circle class="score-ring-fill" id="ring-fill" cx="80" cy="80" r="70"
+          stroke-dasharray="439.82"
+          stroke-dashoffset="439.82"/>
+      </svg>
+      <div class="score-ring-text">
+        <div class="score-big" id="score-big">—</div>
+        <div class="score-label">out of 50</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-breakdown">
+    <div class="breakdown-card">
+      <div class="val" id="mcq-score-disp">—</div>
+      <div class="lbl">MCQ Score (auto-graded)</div>
+    </div>
+    <div class="breakdown-card">
+      <div class="val" id="written-score-disp">Pending</div>
+      <div class="lbl">Written Score (teacher review)</div>
+    </div>
+  </div>
+
+  <div class="result-note">
+    📋 Your written answers have been saved and will be reviewed by your teacher. Your final marks will be updated after review.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TEACHER LOGIN
+════════════════════════════════════════ -->
+<div id="teacher-login" class="screen">
+  <div class="teacher-login-card">
+    <h2>Teacher Panel</h2>
+    <p>Enter password to access student submissions</p>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="teacher-pwd" placeholder="Enter teacher password" onkeydown="if(event.key==='Enter')checkTeacherLogin()"/>
+    </div>
+    <button class="btn-start" style="margin-top:8px" onclick="checkTeacherLogin()">Access Panel →</button>
+    <p style="text-align:center;margin-top:16px;font-size:12px;color:rgba(255,255,255,0.25);">Default password: <code style="color:rgba(255,255,255,0.4)">teacher123</code></p>
+    <p style="text-align:center;margin-top:10px"><a href="#" onclick="showScreen('screen-landing')" style="color:rgba(255,255,255,0.3);font-size:12px;text-decoration:none;">← Back</a></p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     TEACHER PANEL
+════════════════════════════════════════ -->
+<div id="screen-teacher" class="screen">
+  <div class="teacher-header">
+    <div>
+      <h1>Review Panel</h1>
+      <p id="teacher-sub-count">Loading submissions…</p>
+    </div>
+    <button class="btn-teacher-back" onclick="showScreen('screen-landing')">← Exit</button>
+  </div>
+  <div class="submissions-list" id="submissions-list"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// EXAM DATA
+// ═══════════════════════════════════════════
+const MCQ = [
+  {
+    q: "Which of the following is TRUE about a tuple?",
+    opts: ["Tuples are mutable", "Tuples use curly braces", "Tuples cannot be changed after creation", "Tuples allow duplicate keys"],
+    ans: 2
+  },
+  {
+    q: "What is the output of the following code?",
+    code: "t = (1, 2, 2, 3)\nprint(t.count(2))",
+    opts: ["1", "2", "3", "Error"],
+    ans: 1
+  },
+  {
+    q: "Which of the following correctly creates a set in Python?",
+    opts: ["s = [1, 2, 3]", "s = (1, 2, 3)", "s = {1, 2, 3}", "s = <1, 2, 3>"],
+    ans: 2
+  },
+  {
+    q: "What does the % operator do in Python?",
+    opts: ["Division", "Modulus (remainder)", "Power", "Percentage"],
+    ans: 1
+  },
+  {
+    q: "What will the output be?",
+    code: "x = 10\nx += 5\nprint(x)",
+    opts: ["10", "5", "15", "50"],
+    ans: 2
+  },
+  {
+    q: "Which keyword is used to check if a value exists in a list?",
+    opts: ["has", "exists", "in", "find"],
+    ans: 2
+  },
+  {
+    q: "What is the output of the following slice?",
+    code: 'text = "Python"\nprint(text[1:4])',
+    opts: ['"Pyt"', '"yth"', '"ytho"', '"tho"'],
+    ans: 1
+  },
+  {
+    q: 'How do you access the value for key "name" from this dictionary?',
+    code: 'student = {"name": "Priya", "age": 20}',
+    opts: ["student.name", 'student["name"]', "student{name}", "student->name"],
+    ans: 1
+  },
+  {
+    q: "What type of error does the following code produce?",
+    code: "if 5 > 3\n    print('yes')",
+    opts: ["Runtime Error", "Logical Error", "Syntax Error", "No error"],
+    ans: 2
+  },
+  {
+    q: "What is the output of text[::-1] when text = 'Hello'?",
+    opts: ['"Hello"', '"olleH"', '"Hell"', '"ello"'],
+    ans: 1
+  }
+];
+
+const SHORT_Q = [
+  {
+    q: "Write a Python program to create a tuple with 5 fruits and print the second and last elements using indexing.",
+    marks: 4
+  },
+  {
+    q: "Write a program that takes a number from the user and prints whether it is Positive, Negative, or Zero using if...elif...else.",
+    marks: 4
+  },
+  {
+    q: "Explain the difference between a List and a Set with one example each. What happens when you add a duplicate to a set?",
+    marks: 4
+  },
+  {
+    q: "Debug the following code and write the corrected version with a brief explanation of what was wrong:",
+    code: 'student = {"name": "Raj", "marks": 85}\nif student[marks] >= 50\n    print("Pass")\nElse:\n    print("Fail")',
+    marks: 4
+  },
+  {
+    q: "Write a Python program using a while loop to print the sum of all even numbers from 1 to 20.",
+    marks: 4
+  }
+];
+
+const LONG_Q = [
+  {
+    q: "Write a Python program to store the following student data in a dictionary (name='Divya', age=21, marks=78, course='BCA') and perform these tasks:\n(a) Print all keys and values\n(b) Update marks to 90\n(c) Add key 'grade' = 'A'\n(d) Check if 'email' key exists using membership operator\n(e) Print the updated dictionary",
+    marks: 10
+  },
+  {
+    q: "Write a Python program that accepts a word from the user and performs the following using string slicing and indexing:\n(a) Print first and last character\n(b) Print the word in reverse\n(c) Print alternate characters\n(d) Print the middle part (excluding first and last character)\n(e) Check if the word is a palindrome",
+    marks: 10
+  }
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let studentName = '', studentRoll = '';
+let mcqAnswers = new Array(MCQ.length).fill(null);
+let timerInterval = null;
+let secondsLeft = 90 * 60;
+
+// ═══════════════════════════════════════════
+// STORAGE HELPERS
+// ═══════════════════════════════════════════
+function getSubmissions() {
+  try { return JSON.parse(localStorage.getItem('exam_submissions') || '[]'); } catch { return []; }
+}
+function saveSubmissions(arr) {
+  localStorage.setItem('exam_submissions', JSON.stringify(arr));
+}
+
+// ═══════════════════════════════════════════
+// SCREEN MANAGEMENT
+// ═══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showTeacherLogin() { showScreen('teacher-login'); }
+
+// ═══════════════════════════════════════════
+// BUILD EXAM UI
+// ═══════════════════════════════════════════
+function buildExam() {
+  // MCQ
+  const mcqWrap = document.getElementById('mcq-container');
+  mcqWrap.innerHTML = '';
+  MCQ.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `mcq-card-${i}`;
+
+    const letters = ['A','B','C','D'];
+    const opts = q.opts.map((o, j) => `
+      <button class="option-btn" id="opt-${i}-${j}" onclick="selectMCQ(${i},${j})">
+        <span class="option-letter">${letters[j]}</span>${o}
+      </button>`).join('');
+
+    card.innerHTML = `
+      <div class="q-header">
+        <div class="q-num">${i+1}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="q-marks">1 mark</div>
+      </div>
+      ${q.code ? `<div class="code-block">${q.code}</div>` : ''}
+      <div class="options-grid">${opts}</div>
+    `;
+    mcqWrap.appendChild(card);
+  });
+
+  // Short
+  const shortWrap = document.getElementById('short-container');
+  shortWrap.innerHTML = '';
+  SHORT_Q.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `short-card-${i}`;
+    card.innerHTML = `
+      <div class="q-header">
+        <div class="q-num">${MCQ.length + i + 1}</div>
+        <div class="q-text">${q.q.replace(/\n/g,'<br>')}</div>
+        <div class="q-marks">${q.marks} marks</div>
+      </div>
+      ${q.code ? `<div class="code-block">${q.code}</div>` : ''}
+      <textarea class="written-textarea" id="short-ans-${i}" placeholder="Write your answer here…" rows="6" oninput="onWritten('short',${i})"></textarea>
+      <div class="char-count" id="short-cc-${i}">0 characters</div>
+    `;
+    shortWrap.appendChild(card);
+  });
+
+  // Long
+  const longWrap = document.getElementById('long-container');
+  longWrap.innerHTML = '';
+  LONG_Q.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `long-card-${i}`;
+    card.innerHTML = `
+      <div class="q-header">
+        <div class="q-num">${MCQ.length + SHORT_Q.length + i + 1}</div>
+        <div class="q-text">${q.q.replace(/\n/g,'<br>')}</div>
+        <div class="q-marks">${q.marks} marks</div>
+      </div>
+      <textarea class="written-textarea" id="long-ans-${i}" placeholder="Write your complete Python program here…" rows="14" oninput="onWritten('long',${i})"></textarea>
+      <div class="char-count" id="long-cc-${i}">0 characters</div>
+    `;
+    longWrap.appendChild(card);
+  });
+}
+
+function onWritten(type, i) {
+  const ta = document.getElementById(`${type}-ans-${i}`);
+  const cc = document.getElementById(`${type}-cc-${i}`);
+  cc.textContent = `${ta.value.length} characters`;
+  const card = document.getElementById(`${type}-card-${i}`);
+  if (ta.value.trim()) {
+    card.classList.add('answered');
+    card.querySelector('.q-num').style.background = 'var(--accent2)';
+  } else {
+    card.classList.remove('answered');
+    card.querySelector('.q-num').style.background = '';
+  }
+  updateProgress();
+}
+
+function selectMCQ(qIdx, optIdx) {
+  mcqAnswers[qIdx] = optIdx;
+  const letters = ['A','B','C','D'];
+  MCQ[qIdx].opts.forEach((_, j) => {
+    const btn = document.getElementById(`opt-${qIdx}-${j}`);
+    btn.className = 'option-btn' + (j === optIdx ? ' selected' : '');
+  });
+  const card = document.getElementById(`mcq-card-${qIdx}`);
+  card.classList.add('answered');
+  card.querySelector('.q-num').style.background = 'var(--accent2)';
+  updateProgress();
+}
+
+function updateProgress() {
+  let answered = mcqAnswers.filter(a => a !== null).length;
+  SHORT_Q.forEach((_, i) => { if ((document.getElementById(`short-ans-${i}`)?.value || '').trim()) answered++; });
+  LONG_Q.forEach((_, i) => { if ((document.getElementById(`long-ans-${i}`)?.value || '').trim()) answered++; });
+  const total = MCQ.length + SHORT_Q.length + LONG_Q.length;
+  const pct = (answered / total) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${answered} of ${total} answered`;
+}
+
+// ═══════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    const m = Math.floor(secondsLeft / 60);
+    const s = secondsLeft % 60;
+    const display = document.getElementById('timer-display');
+    display.textContent = `⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (secondsLeft <= 300) display.classList.add('warning');
+    if (secondsLeft <= 0) { clearInterval(timerInterval); submitExam(true); }
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════
+// START / SUBMIT
+// ═══════════════════════════════════════════
+function startExam() {
+  const name = document.getElementById('input-name').value.trim();
+  const roll = document.getElementById('input-roll').value.trim();
+  if (!name || !roll) { showToast('Please enter your name and roll number'); return; }
+  studentName = name;
+  studentRoll = roll;
+  document.getElementById('topbar-name').textContent = `${name} · ${roll}`;
+  buildExam();
+  showScreen('screen-exam');
+  startTimer();
+  window.scrollTo(0,0);
+}
+
+function submitExam(auto = false) {
+  if (!auto) {
+    const answered = mcqAnswers.filter(a => a !== null).length;
+    const total = MCQ.length + SHORT_Q.length + LONG_Q.length;
+    if (answered < MCQ.length) {
+      const unanswered = MCQ.length - answered;
+      if (!confirm(`You have ${unanswered} unanswered MCQ question(s). Submit anyway?`)) return;
+    }
+  }
+
+  clearInterval(timerInterval);
+
+  // Score MCQ
+  let mcqScore = 0;
+  const mcqResults = MCQ.map((q, i) => {
+    const correct = mcqAnswers[i] === q.ans;
+    if (correct) mcqScore++;
+    return { q: q.q, chosen: mcqAnswers[i], correct: q.ans, isCorrect: correct, opts: q.opts };
+  });
+
+  // Collect written
+  const shortAnswers = SHORT_Q.map((q, i) => ({
+    q: q.q, marks: q.marks,
+    answer: document.getElementById(`short-ans-${i}`)?.value || '',
+    awarded: null
+  }));
+  const longAnswers = LONG_Q.map((q, i) => ({
+    q: q.q, marks: q.marks,
+    answer: document.getElementById(`long-ans-${i}`)?.value || '',
+    awarded: null
+  }));
+
+  const submission = {
+    id: Date.now(),
+    name: studentName,
+    roll: studentRoll,
+    timestamp: new Date().toLocaleString(),
+    mcqScore,
+    mcqResults,
+    shortAnswers,
+    longAnswers,
+    writtenMarksAwarded: null,
+    totalMarksAwarded: null
+  };
+
+  const subs = getSubmissions();
+  subs.push(submission);
+  saveSubmissions(subs);
+
+  // Show result
+  showResult(mcqScore, submission.id);
+}
+
+function showResult(mcqScore) {
+  showScreen('screen-result');
+  window.scrollTo(0,0);
+
+  const percent = mcqScore / 10;
+  document.getElementById('score-big').textContent = `${mcqScore}/10`;
+  document.getElementById('mcq-score-disp').textContent = `${mcqScore}/10`;
+  document.getElementById('written-score-disp').textContent = 'Pending';
+  document.getElementById('result-title').textContent = mcqScore >= 8 ? 'Excellent!' : mcqScore >= 5 ? 'Good Job!' : 'Keep Practising!';
+  document.getElementById('result-sub').textContent = `Hello ${studentName}, your MCQ answers have been auto-graded. Written answers are pending teacher review.`;
+  document.getElementById('result-icon').textContent = mcqScore >= 8 ? '🏆' : mcqScore >= 5 ? '🎉' : '📚';
+
+  setTimeout(() => {
+    const circ = 2 * Math.PI * 70;
+    const offset = circ - (mcqScore / 10) * circ;
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+  }, 300);
+}
+
+// ═══════════════════════════════════════════
+// TEACHER PANEL
+// ═══════════════════════════════════════════
+function checkTeacherLogin() {
+  const pwd = document.getElementById('teacher-pwd').value;
+  if (pwd === 'teacher123') {
+    showScreen('screen-teacher');
+    renderTeacherPanel();
+  } else {
+    showToast('Incorrect password');
+    document.getElementById('teacher-pwd').value = '';
+  }
+}
+
+function renderTeacherPanel() {
+  const subs = getSubmissions();
+  const list = document.getElementById('submissions-list');
+  const countEl = document.getElementById('teacher-sub-count');
+
+  countEl.textContent = `${subs.length} submission${subs.length !== 1 ? 's' : ''} received`;
+
+  if (subs.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>No submissions yet. Share the exam link with your students.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = '';
+
+  subs.forEach((sub, si) => {
+    const card = document.createElement('div');
+    card.className = 'submission-card';
+
+    const writtenTotal = [...sub.shortAnswers, ...sub.longAnswers].reduce((a,q) => a + q.marks, 0);
+    const awardedSum = [...sub.shortAnswers, ...sub.longAnswers]
+      .filter(q => q.awarded !== null).reduce((a,q) => a + (q.awarded||0), 0);
+    const pendingCount = [...sub.shortAnswers, ...sub.longAnswers].filter(q => q.awarded === null).length;
+
+    const totalAwarded = sub.mcqScore + awardedSum;
+    const scoreDisplay = pendingCount > 0 ? `MCQ: ${sub.mcqScore}/10 · Written: Pending` : `Total: ${totalAwarded}/50`;
+
+    // MCQ summary
+    const mcqSummary = sub.mcqResults.map((r,i) => `
+      <div class="mcq-summary-item ${r.isCorrect ? 'correct' : 'wrong'}">
+        <div class="q-label">Q${i+1} ${r.isCorrect ? '✓' : '✗'}</div>
+        <div class="ans">Ans: ${r.opts[r.correct]} ${!r.isCorrect && r.chosen !== null ? `· Chose: ${r.opts[r.chosen]}` : r.chosen === null ? '· Not answered' : ''}</div>
+      </div>`).join('');
+
+    // Written reviews
+    const buildWritten = (arr, type) => arr.map((q, qi) => `
+      <div class="written-review-item" id="wr-${si}-${type}-${qi}">
+        <div class="q">Q: ${q.q.substring(0,100)}${q.q.length > 100 ? '…' : ''}</div>
+        <div class="a">${q.answer || '(No answer provided)'}</div>
+        <div class="marks-input-row">
+          <label>Award marks (max ${q.marks}):</label>
+          <input type="number" class="marks-input" id="marks-${si}-${type}-${qi}"
+            min="0" max="${q.marks}" step="0.5"
+            value="${q.awarded !== null ? q.awarded : ''}"
+            placeholder="0–${q.marks}"/>
+          <button class="btn-save-marks" onclick="saveMark(${si},'${type}',${qi})">Save</button>
+          ${q.awarded !== null ? `<span style="color:var(--correct);font-size:13px;font-weight:600">✓ ${q.awarded}/${q.marks}</span>` : ''}
+        </div>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <div class="submission-head" onclick="toggleSub(${si})">
+        <div>
+          <h3>${sub.name} · <span style="opacity:0.6">${sub.roll}</span></h3>
+          <div class="meta">${sub.timestamp} · ${pendingCount > 0 ? pendingCount + ' pending review' : 'All reviewed'}</div>
+        </div>
+        <div class="submission-score-badge">${scoreDisplay}</div>
+      </div>
+      <div class="submission-body" id="sub-body-${si}">
+        <div class="review-section">
+          <h4>MCQ Results (${sub.mcqScore}/10)</h4>
+          <div class="mcq-summary-grid">${mcqSummary}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="review-section">
+          <h4>Short Answer Questions (Review & Award Marks)</h4>
+          ${buildWritten(sub.shortAnswers, 'short')}
+        </div>
+        <div class="divider"></div>
+        <div class="review-section">
+          <h4>Programming Questions (Review & Award Marks)</h4>
+          ${buildWritten(sub.longAnswers, 'long')}
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function toggleSub(si) {
+  const body = document.getElementById(`sub-body-${si}`);
+  body.classList.toggle('open');
+}
+
+function saveMark(si, type, qi) {
+  const input = document.getElementById(`marks-${si}-${type}-${qi}`);
+  const val = parseFloat(input.value);
+  const subs = getSubmissions();
+  const sub = subs[si];
+  const arr = type === 'short' ? sub.shortAnswers : sub.longAnswers;
+  if (isNaN(val) || val < 0 || val > arr[qi].marks) {
+    showToast(`Enter a value between 0 and ${arr[qi].marks}`); return;
+  }
+  arr[qi].awarded = val;
+
+  // Update totals
+  const allWritten = [...sub.shortAnswers, ...sub.longAnswers];
+  const allAwarded = allWritten.every(q => q.awarded !== null);
+  if (allAwarded) {
+    sub.writtenMarksAwarded = allWritten.reduce((a,q) => a + q.awarded, 0);
+    sub.totalMarksAwarded = sub.mcqScore + sub.writtenMarksAwarded;
+  }
+
+  saveSubmissions(subs);
+  showToast(`Saved! ${val}/${arr[qi].marks} marks awarded`);
+  renderTeacherPanel();
+  // Re-open
+  setTimeout(() => {
+    const body = document.getElementById(`sub-body-${si}`);
+    if (body) body.classList.add('open');
+  }, 50);
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  showScreen('screen-landing');
+});
+</script>
+</body>
+</html>
